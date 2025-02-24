@@ -7,7 +7,7 @@ body {
     position: relative;
     background-attachment: fixed;
     background-image: url("../images/img-QoN23lUZfEWQ8aPlVBuJ4.jpeg");
-    background-size: min(200%, 100%);
+    background-size: min(200%, 200%);
     height: 100vh;
     margin: 0;
     overflow: auto;
