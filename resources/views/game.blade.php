@@ -25,14 +25,15 @@
             <div class="relative">
                 <input type="number" inputmode="decimal" id="scored"
                        class="text-3xl block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Enter score" required/>
+                       placeholder="Score" required/>
                 <button type="submit" id="score-submit"
-                        class="text-white absolute end-2 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-3xl px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        class="text-white absolute end-24 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-3xl px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Enter!
                 </button>
+                <button id="clear-score"
+                        class="text-white absolute end-2 bottom-3 bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xl px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Clear</button>
             </div>
-            <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-full content-center text-center"></div>
-            <p class="lead lg:col-span-1">-OR- Enter segments hit...</p>
+            <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-full content-center text-center">-OR- Enter segments hit...</div>
         </div>
 
         <div class="grid @if($game['quadro']) grid-cols-1 lg:grid-cols-2 @else grid-cols-2 @endif">
@@ -132,6 +133,12 @@
 
         const dartsHit = document.getElementById('darts-hit');
         const dartButtons = document.querySelectorAll('button[value]');
+        const clearScore = document.getElementById('clear-score');
+
+        clearScore.addEventListener('click', () => {
+            scoreInput.value = '';
+            dartsHit.innerHTML = '-OR- Enter segments hit...';
+        });
 
         scoreSubmit.addEventListener('click', () => {
             if (scoreInput.value === "") {
@@ -145,9 +152,12 @@
             const playerScore = currentPlayer === 'player1' ? player1Score : player2Score;
             const newScore = playerScore.value - score;
             if (newScore === 1 || newScore < 0 ) {
-                alert('Bust!');
-            } else if (newScore === 0 && !allowedCheckouts.includes(newScore)) {
-                alert('Invalid checkout!');
+                alermt('Bust!');
+            } else if (newScore === 0 && !allowedCheckouts.includes(score)) {
+                alert(`${score} is not a valid checkout score`);
+            } else if (newScore === 0 && allowedCheckouts.includes(score)) {
+                const playerName = currentPlayer === 'player1' ? '{{ $game['player1'] }}' : '{{ $game['player2'] }}';
+                alert(`${playerName} wins!`);
             }
             else {
                 playerScore.value = newScore;
@@ -162,14 +172,18 @@
             player1Score.classList.toggle('border-4')
             player2Score.classList.toggle('border-4')
 
-            dartsHit.innerHTML = '';
+            dartsHit.innerHTML = '-OR- Enter segments hit...';
         });
 
         let darts = 0;
         dartButtons.forEach(button => {
             button.addEventListener('click', (event) => {
+                if (dartsHit.innerHTML.split(' + ').length >= 3) {
+                    alert('Only 3 darts per turn\nClear to try again or enter score manually');
+                    return;
+                }
                 const value = parseInt(event.target.value);
-                if (dartsHit.innerHTML === '') {
+                if (dartsHit.innerHTML === '-OR- Enter segments hit...') {
                     dartsHit.innerHTML = value;
                 } else {
                     dartsHit.innerHTML = dartsHit.innerHTML + ' + ' + value;
