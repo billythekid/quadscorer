@@ -148,6 +148,7 @@
         clearScore.addEventListener('click', () => {
             scoreInput.value = '';
             dartsHit.innerHTML = '-OR- Enter segments hit...';
+            scoreRemaining.innerHTML = `Remaining: ${currentPlayer === 'player1' ? player1Score.value : player2Score.value}`;
         });
 
         scoreSubmit.addEventListener('click', () => {
@@ -162,7 +163,7 @@
             const playerScore = currentPlayer === 'player1' ? player1Score : player2Score;
             const newScore = playerScore.value - score;
             if (newScore === 1 || newScore < 0) {
-                alermt('Bust!');
+                alert('Bust!');
             }
             else if (newScore === 0 && !allowedCheckouts.includes(score)) {
                 alert(`${score} is not a valid checkout score`);
