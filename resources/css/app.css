@@ -6,6 +6,9 @@ html {
     background-color: black;
     box-sizing: border-box;
     position: relative;
+    background-attachment: scroll;
+    background-image: url("../images/img-QoN23lUZfEWQ8aPlVBuJ4.jpeg");
+    background-size: min(200%, 200%);
 }
 
 html::after {
@@ -19,7 +22,5 @@ html::after {
 }
 
 body {
-    background-attachment: scroll;
-    background-image: url("../images/img-QoN23lUZfEWQ8aPlVBuJ4.jpeg");
-    background-size: min(200%, 200%);
+
 }
