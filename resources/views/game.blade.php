@@ -23,7 +23,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 space-x-2 mb-4">
             <div class="relative">
-                <input type="number" id="scored"
+                <input type="number" inputmode="decimal" id="scored"
                        class="text-3xl block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                        placeholder="Enter score" required/>
                 <button type="submit" id="score-submit"
