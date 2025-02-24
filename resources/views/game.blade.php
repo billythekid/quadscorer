@@ -36,8 +36,8 @@
                 </button>
             </div>
             <div>
-                <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-lg text-center">-OR- Enter
-                    segments hit...
+                <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-lg text-center">
+                    -OR- Enter segments hit...
                 </div>
                 <div id=to-go class="format text-xl text-gray-900 bg-white/50 rounded-lg text-center">
                     Remaining: {{ $game['starting_score'] }}</div>
@@ -198,7 +198,7 @@
                     return;
                 }
                 const value = parseInt(event.target.value);
-                if (dartsHit.innerHTML === '-OR- Enter segments hit...') {
+                if (dartsHit.innerHTML.trim() === '-OR- Enter segments hit...') {
                     dartsHit.innerHTML = value;
                 }
                 else {
