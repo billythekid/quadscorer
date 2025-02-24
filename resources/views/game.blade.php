@@ -4,8 +4,8 @@
 
         <div class="format"><a href="/">Home</a></div>
 
-        <div class="grid grid-cols-1 my-4">
-            <div class="inline-flex space-x-2 w-full">
+        <div class="grid grid-cols-1 mb-2">
+            <div class="grid grid-cols-2">
                 <div class="flex flex-col flex-grow space-y-2">
                     <label for="player1" class="format text-lg">{{$game['player1']}} Score Remaining</label>
                     <input readonly type="text" name="player1" id="player1"
@@ -21,8 +21,8 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 space-x-2 mb-4">
-            <div class="relative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 space-x-2 mb-2">
+            <div class="relative mb-2">
                 <input type="number" inputmode="decimal" id="scored"
                        class="text-3xl block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                        placeholder="Score" required/>
@@ -31,9 +31,17 @@
                     Enter!
                 </button>
                 <button id="clear-score"
-                        class="text-white absolute end-2 bottom-3 bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xl px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Clear</button>
+                        class="text-white absolute end-2 bottom-3 bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xl px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                    Clear
+                </button>
             </div>
-            <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-full content-center text-center">-OR- Enter segments hit...</div>
+            <div>
+                <div id="darts-hit" class="format text-2xl text-gray-900 bg-white/50 rounded-lg text-center">-OR- Enter
+                    segments hit...
+                </div>
+                <div id=to-go class="format text-xl text-gray-900 bg-white/50 rounded-lg text-center">
+                    Remaining: {{ $game['starting_score'] }}</div>
+            </div>
         </div>
 
         <div class="grid @if($game['quadro']) grid-cols-1 lg:grid-cols-2 @else grid-cols-2 @endif">
@@ -70,7 +78,7 @@
                         @endif
                     @else
                         <button value="{{$i}}"
-                            type="button"
+                                type="button"
                                 class="flex-grow px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-gray-200 rounded-s-lg hover:bg-gray-300 hover:text-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
                             {{$i}}
                         </button>
@@ -87,13 +95,13 @@
                             </button>
                             <button value="{{$i * 4}}"
                                     type="button"
-                                    class="flex-grow px-4 py-2 text-sm font-medium text-gray-900 bg-red-600 border border-red-200 rounded-e-lg hover:bg-red-300 focus:z-10 focus:ring-4 focus:ring-red-700 focus:text-red-700 dark:bg-red-800 dark:border-red-700 dark:text-white dark:hover:text-white dark:hover:bg-red-700 dark:focus:ring-red-500 dark:focus:text-white">
+                                    class="mr-0.5 flex-grow px-4 py-2 text-sm font-medium text-gray-900 bg-red-600 border border-red-200 rounded-e-lg hover:bg-red-300 focus:z-10 focus:ring-4 focus:ring-red-700 focus:text-red-700 dark:bg-red-800 dark:border-red-700 dark:text-white dark:hover:text-white dark:hover:bg-red-700 dark:focus:ring-red-500 dark:focus:text-white">
                                 Q{{$i}}
                             </button>
                         @else
                             <button value="{{$i * 3}}"
                                     type="button"
-                                    class="flex-grow px-4 py-2 text-sm font-medium text-gray-900 bg-red-600 border border-red-200 rounded-e-lg hover:bg-red-300 focus:z-10 focus:ring-4 focus:ring-red-700 focus:text-red-700 dark:bg-red-800 dark:border-red-700 dark:text-white dark:hover:text-white dark:hover:bg-red-700 dark:focus:ring-red-500 dark:focus:text-white">
+                                    class="mr-0.5 flex-grow px-4 py-2 text-sm font-medium text-gray-900 bg-red-600 border border-red-200 rounded-e-lg hover:bg-red-300 focus:z-10 focus:ring-4 focus:ring-red-700 focus:text-red-700 dark:bg-red-800 dark:border-red-700 dark:text-white dark:hover:text-white dark:hover:bg-red-700 dark:focus:ring-red-500 dark:focus:text-white">
                                 T{{$i}}
                             </button>
                         @endif
@@ -103,17 +111,17 @@
         </div>
         <div class="mx-1 flex flex-row space-x-2">
             <button value="0"
-                type="submit"
+                    type="submit"
                     class="w-[calc(100%)] text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                 0
             </button>
             <button value="25"
-                type="submit"
+                    type="submit"
                     class="w-[calc(100%)] text-gray-900 bg-green-500 hover:bg-green-300 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-800 dark:hover:bg-green-700 dark:text-white dark:hover:text-white dark:focus:ring-green-500">
                 25
             </button>
             <button value="50"
-                type="submit"
+                    type="submit"
                     class="w-[calc(100%)] text-gray-900 bg-red-600 hover:bg-red-300 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-800 dark:hover:bg-red-700 dark:focus:ring-red-800 dark:text-white">
                 Bullseye
             </button>
@@ -132,6 +140,8 @@
         let currentPlayer = 'player1';
 
         const dartsHit = document.getElementById('darts-hit');
+        const scoreRemaining = document.getElementById('to-go');
+
         const dartButtons = document.querySelectorAll('button[value]');
         const clearScore = document.getElementById('clear-score');
 
@@ -151,11 +161,13 @@
             }
             const playerScore = currentPlayer === 'player1' ? player1Score : player2Score;
             const newScore = playerScore.value - score;
-            if (newScore === 1 || newScore < 0 ) {
+            if (newScore === 1 || newScore < 0) {
                 alermt('Bust!');
-            } else if (newScore === 0 && !allowedCheckouts.includes(score)) {
+            }
+            else if (newScore === 0 && !allowedCheckouts.includes(score)) {
                 alert(`${score} is not a valid checkout score`);
-            } else if (newScore === 0 && allowedCheckouts.includes(score)) {
+            }
+            else if (newScore === 0 && allowedCheckouts.includes(score)) {
                 const playerName = currentPlayer === 'player1' ? '{{ $game['player1'] }}' : '{{ $game['player2'] }}';
                 alert(`${playerName} wins!`);
             }
@@ -173,6 +185,9 @@
             player2Score.classList.toggle('border-4')
 
             dartsHit.innerHTML = '-OR- Enter segments hit...';
+            nextPlayerScore = currentPlayer === 'player1' ? player1Score : player2Score;
+            scoreRemaining.innerHTML = `Remaining: ${nextPlayerScore.value}`;
+
         });
 
         let darts = 0;
@@ -185,12 +200,15 @@
                 const value = parseInt(event.target.value);
                 if (dartsHit.innerHTML === '-OR- Enter segments hit...') {
                     dartsHit.innerHTML = value;
-                } else {
+                }
+                else {
                     dartsHit.innerHTML = dartsHit.innerHTML + ' + ' + value;
                 }
+                currentPlayerScore = currentPlayer === 'player1' ? player1Score : player2Score;
                 dartScores = dartsHit.innerHTML.split(' + ').map(Number);
                 darts = dartScores.reduce((a, b) => a + b, 0);
                 scoreInput.value = darts;
+                scoreRemaining.innerHTML = `Remaining: ${currentPlayerScore.value - darts}`;
             });
         });
     </script>
