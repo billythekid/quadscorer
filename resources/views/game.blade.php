@@ -38,7 +38,7 @@
 
         <div class="grid @if($game['quadro']) grid-cols-1 lg:grid-cols-2 @else grid-cols-2 @endif">
             @foreach ( range(20,1) as $i)
-                <div class="inline-flex m-2 rounded-md shadow-xs font-mono" role="group">
+                <div class="inline-flex mb-0.5 rounded-md shadow-xs font-mono" role="group">
                     @if(in_array($i, [1, 4, 5, 6, 9, 11, 15, 16, 17, 19]))
                         <button value="{{$i}}"
                                 type="button"
