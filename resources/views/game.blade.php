@@ -171,6 +171,7 @@
             else if (newScore === 0 && allowedCheckouts.includes(score)) {
                 const playerName = currentPlayer === 'player1' ? '{{ $game['player1'] }}' : '{{ $game['player2'] }}';
                 alert(`${playerName} wins!`);
+                player1Score.value = player2Score.value = {{ $game['starting_score'] }};
             }
             else {
                 playerScore.value = newScore;
