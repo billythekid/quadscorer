@@ -15,7 +15,6 @@
 </head>
 <body class="font-sans">
 <div class="text-black/50 dark:text-white/50 z-10">
-    <img src="/images/img-QoN23lUZfEWQ8aPlVBuJ4.jpeg" alt="imge" class="hidden">
     <div class="container mx-auto px-4 py-8">
         @yield('content')
     </div>
