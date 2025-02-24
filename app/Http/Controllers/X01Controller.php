@@ -15,9 +15,9 @@ class X01Controller extends Controller
             'player1' => $request->input('player1'),
             'player2' => $request->input('player2'),
             'starting_score' => $request->input('starting-score'),
-            'double_in' => $request->input('double-in'),
-            'double_out' => $request->input('double-out'),
-            '25_bullseye' => $request->input('bullseye-50'),
+//            'double_in' => $request->input('double-in'),
+//            'double_out' => $request->input('double-out'),
+//            '25_bullseye' => $request->input('bullseye-50'),
             'quadro' => $request->input('quadro'),
         ];
         $allowedScoresPerDart = $this->getAllowedScoresPerDart($request);
