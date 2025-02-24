@@ -64,7 +64,7 @@
                             <button value="{{$i * 3}}"
                                     type="button"
                                     class="flex-grow px-4 py-2 text-sm font-medium text-gray-900 bg-green-500 border border-green-200 rounded-e-lg hover:bg-green-300 focus:z-10 focus:ring-4 focus:ring-green-700 focus:text-green-700 dark:bg-green-800 dark:border-green-700 dark:text-white dark:hover:text-white dark:hover:bg-green-700 dark:focus:ring-green-500 dark:focus:text-white">
-                                T<span class="invisible">{{$i}}
+                                T{{$i}}
                             </button>
                         @endif
                     @else
