@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
-        $middleware->removeFromGroup("web", ValidateCsrfToken::class);
+        $middleware->removeFromGroup('web', ValidateCsrfToken::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
