@@ -6,4 +6,3 @@ It can handle quadro boards.
 
 See it in action here:
 - https://qs.btk.scot
-- https://quadscorer.laravel.cloud
