@@ -38,7 +38,7 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php -r \"exec('php artisan package:discover --ansi', \\$output, \\$code); exit(0);\""
+            "@php -r \"\\$code = 0; system('php artisan package:discover --ansi', \\$code); if (\\$code !== 0) { fwrite(STDERR, 'Warning: package:discover failed with exit code ' . \\$code . ', but continuing deployment.' . PHP_EOL); } exit(0);\""
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
