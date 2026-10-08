@@ -21,6 +21,14 @@
             </div>
         </div>
 
+        <!-- Input Mode Toggle -->
+        <div class="mb-2 text-center">
+            <button id="input-mode-toggle" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-lg focus:ring-4 focus:outline-none focus:ring-gray-300">
+                <span id="toggle-text">Switch to Keypad Mode</span>
+            </button>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 space-x-2 mb-2">
             <div class="relative mb-2">
                 <input type="number" inputmode="decimal" id="scored"
@@ -42,6 +50,22 @@
                 <div id=to-go class="format text-xl text-gray-900 bg-white/50 rounded-lg text-center">
                     Remaining: {{ $game['starting_score'] }}</div>
             </div>
+        </div>
+
+        <!-- Numeric Keypad (Hidden by default) -->
+        <div id="numeric-keypad" class="hidden gap-2 mb-4 max-w-xs mx-auto" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="1">1</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="2">2</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="3">3</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="4">4</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="5">5</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="6">6</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="7">7</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="8">8</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="9">9</button>
+            <button id="keypad-backspace" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-6 rounded-lg text-lg">⌫</button>
+            <button class="keypad-btn bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-4 px-6 rounded-lg text-xl" data-value="0">0</button>
+            <button id="keypad-enter" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg">↵</button>
         </div>
 
         <div class="grid @if($game['quadro']) grid-cols-1 lg:grid-cols-2 @else grid-cols-2 @endif">
@@ -145,10 +169,72 @@
         const dartButtons = document.querySelectorAll('button[value]');
         const clearScore = document.getElementById('clear-score');
 
+        // Keypad elements
+        const inputModeToggle = document.getElementById('input-mode-toggle');
+        const toggleText = document.getElementById('toggle-text');
+        const numericKeypad = document.getElementById('numeric-keypad');
+        const keypadButtons = document.querySelectorAll('.keypad-btn');
+        const keypadBackspace = document.getElementById('keypad-backspace');
+        const keypadEnter = document.getElementById('keypad-enter');
+        
+        let isKeypadMode = false;
+
         clearScore.addEventListener('click', () => {
             scoreInput.value = '';
             dartsHit.innerHTML = '-OR- Enter segments hit...';
             scoreRemaining.innerHTML = `Remaining: ${currentPlayer === 'player1' ? player1Score.value : player2Score.value}`;
+        });
+
+        // Input mode toggle functionality
+        inputModeToggle.addEventListener('click', () => {
+            isKeypadMode = !isKeypadMode;
+            
+            if (isKeypadMode) {
+                // Switch to keypad mode
+                scoreInput.setAttribute('readonly', 'true');
+                scoreInput.setAttribute('inputmode', 'none');
+                scoreInput.style.caretColor = 'transparent'; // Hide cursor
+                numericKeypad.style.display = 'grid';
+                numericKeypad.classList.remove('hidden');
+                toggleText.textContent = 'Switch to Manual Input';
+                inputModeToggle.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                inputModeToggle.classList.add('bg-green-600', 'hover:bg-green-700');
+            } else {
+                // Switch to manual input mode
+                scoreInput.removeAttribute('readonly');
+                scoreInput.setAttribute('inputmode', 'decimal');
+                scoreInput.style.caretColor = 'auto'; // Show cursor
+                numericKeypad.style.display = 'none';
+                numericKeypad.classList.add('hidden');
+                toggleText.textContent = 'Switch to Keypad Mode';
+                inputModeToggle.classList.remove('bg-green-600', 'hover:bg-green-700');
+                inputModeToggle.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            }
+        });
+
+        // Prevent focus on score input when in keypad mode
+        scoreInput.addEventListener('focus', (e) => {
+            if (isKeypadMode) {
+                e.preventDefault();
+                scoreInput.blur();
+            }
+        });
+
+        // Keypad button functionality
+        keypadButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.getAttribute('data-value');
+                scoreInput.value = scoreInput.value + value;
+            });
+        });
+
+        keypadBackspace.addEventListener('click', () => {
+            scoreInput.value = scoreInput.value.slice(0, -1);
+        });
+
+        keypadEnter.addEventListener('click', () => {
+            // Trigger the same logic as the main submit button
+            scoreSubmit.click();
         });
 
         scoreSubmit.addEventListener('click', () => {
