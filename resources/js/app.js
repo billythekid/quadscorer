@@ -217,7 +217,7 @@ function dartEntry() {
                 `).join('')}
             </div>
             <div class="numbers">
-                ${Array.from({ length: 20 }, (_, index) => index + 1).map((number) => `
+                ${Array.from({ length: 20 }, (_, index) => 20 - index).map((number) => `
                     <button data-action="dart" data-number="${number}">${number}</button>
                 `).join('')}
                 <button data-action="miss">Miss</button>
