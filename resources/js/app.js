@@ -8,6 +8,7 @@ import {
     restorePlayerNames,
     saveGame,
     savePlayerNames,
+    startRematch,
     undoVisit,
 } from './game.js';
 
@@ -251,6 +252,20 @@ function dartEntry() {
 
 function renderGame() {
     const boardName = state.game.settings.quadro ? 'Quadro' : 'Standard';
+    const historySections = [
+        {
+            title: `Game ${state.game.completedGames.length + 1}`,
+            players: state.game.players.map((player) => player.name),
+            winnerIndex: state.game.winnerIndex,
+            history: state.game.history,
+            current: true,
+        },
+        ...[...state.game.completedGames].reverse().map((game, index) => ({
+            title: `Game ${state.game.completedGames.length - index}`,
+            ...game,
+            current: false,
+        })),
+    ];
 
     app.innerHTML = `
         <section class="game-shell">
@@ -292,15 +307,25 @@ function renderGame() {
                 <button class="icon-button" data-action="close-history">Close</button>
             </div>
             <div class="history-list">
-                ${state.game.history.length
-                    ? [...state.game.history].reverse().map((visit) => `
-                        <div class="history-row">
-                            <span>${escapeHtml(state.game.players[visit.playerIndex].name)}</span>
-                            <strong>${escapeHtml(visit.label)}</strong>
-                            <span>${visit.scoreBefore} to ${visit.scoreAfter}</span>
-                        </div>
-                    `).join('')
-                    : '<p>No visits yet.</p>'}
+                ${historySections.map((game) => `
+                    <section class="history-section">
+                        <header>
+                            <strong>${game.title}</strong>
+                            <span>${game.winnerIndex === null
+                                ? (game.current ? 'In progress' : 'Not completed')
+                                : `${escapeHtml(game.players[game.winnerIndex])} won`}</span>
+                        </header>
+                        ${game.history.length
+                            ? [...game.history].reverse().map((visit) => `
+                                <div class="history-row">
+                                    <span>${escapeHtml(game.players[visit.playerIndex])}</span>
+                                    <strong>${escapeHtml(visit.label)}</strong>
+                                    <span>${visit.scoreBefore} to ${visit.scoreAfter}</span>
+                                </div>
+                            `).join('')
+                            : '<p>No visits yet.</p>'}
+                    </section>
+                `).join('')}
             </div>
         </dialog>
     `;
@@ -420,7 +445,7 @@ app.addEventListener('click', async (event) => {
         state.notice = '';
         persist();
     } else if (action === 'rematch') {
-        state.game = createGame(state.game.settings);
+        state.game = startRematch(state.game);
         state.notice = '';
         persist();
     } else if (action === 'new-game') {

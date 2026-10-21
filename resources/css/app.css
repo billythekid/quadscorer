@@ -622,7 +622,34 @@ dialog::backdrop {
 
 .history-list {
     display: grid;
+    gap: 16px;
     padding: 8px 16px 16px;
+}
+
+.history-section {
+    min-width: 0;
+}
+
+.history-section > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    color: var(--muted);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+}
+
+.history-section > header strong {
+    color: #fff;
+    font-size: 0.82rem;
+}
+
+.history-section > p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.8rem;
 }
 
 .history-row {

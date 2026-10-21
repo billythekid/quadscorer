@@ -10,6 +10,7 @@ import {
     restorePlayerNames,
     saveGame,
     savePlayerNames,
+    startRematch,
     undoVisit,
 } from '../resources/js/game.js';
 
@@ -118,6 +119,23 @@ test('undo restores the previous player and score', () => {
     assert.equal(undone.players[0].visits.length, 0);
     assert.equal(undone.currentPlayerIndex, 0);
     assert.equal(undone.history.length, 0);
+});
+
+test('a rematch preserves completed game history and resets the scores', () => {
+    const game = createGame({ players: ['Alice', 'Bob'], startingScore: 40 });
+    const finished = addVisit(game, {
+        segments: [{ multiplier: 'D', number: 20, value: 40 }],
+    }).game;
+    const rematch = startRematch(finished);
+
+    assert.equal(rematch.players[0].score, 40);
+    assert.equal(rematch.players[1].score, 40);
+    assert.equal(rematch.history.length, 0);
+    assert.equal(rematch.winnerIndex, null);
+    assert.equal(rematch.completedGames.length, 1);
+    assert.equal(rematch.completedGames[0].winnerIndex, 0);
+    assert.deepEqual(rematch.completedGames[0].players, ['Alice', 'Bob']);
+    assert.equal(rematch.completedGames[0].history[0].label, 'D20');
 });
 
 test('persists and restores a game', () => {

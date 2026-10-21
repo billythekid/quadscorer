@@ -30,6 +30,7 @@ export function createGame({ players, startingScore, quadro = false }) {
         currentPlayerIndex: 0,
         winnerIndex: null,
         history: [],
+        completedGames: [],
     };
 }
 
@@ -281,6 +282,21 @@ export function undoVisit(game) {
     return nextGame;
 }
 
+export function startRematch(game) {
+    const nextGame = createGame(game.settings);
+
+    nextGame.completedGames = [
+        ...(game.completedGames ?? []),
+        {
+            players: game.players.map((player) => player.name),
+            winnerIndex: game.winnerIndex,
+            history: game.history,
+        },
+    ];
+
+    return nextGame;
+}
+
 export function saveGame(storage, game) {
     storage.setItem(STORAGE_KEY, JSON.stringify(game));
 }
@@ -305,6 +321,8 @@ export function restoreGame(storage) {
 
             return null;
         }
+
+        game.completedGames = Array.isArray(game.completedGames) ? game.completedGames : [];
 
         return game;
     } catch {
