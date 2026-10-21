@@ -4,6 +4,7 @@ import {
     addVisit,
     allowedTotals,
     checkoutRoute,
+    checkoutRoutes,
     createGame,
     restoreGame,
     restorePlayerNames,
@@ -82,6 +83,30 @@ test('finds standard and Quadro checkout routes', () => {
     );
     assert.equal(checkoutRoute(200, false), null);
     assert.equal(checkoutRoute(200, true).reduce((sum, segment) => sum + segment.value, 0), 200);
+});
+
+test('offers distinct checkout variants that all finish on a double', () => {
+    const routes = checkoutRoutes(100, false, 3, 3);
+
+    assert.equal(routes.length, 3);
+    assert.equal(new Set(routes.map((route) => route.map(({ multiplier, number }) => `${multiplier}${number}`).join('-'))).size, 3);
+
+    for (const route of routes) {
+        assert.equal(route.reduce((sum, segment) => sum + segment.value, 0), 100);
+        assert.equal(['D', 'DB'].includes(route.at(-1).multiplier), true);
+    }
+});
+
+test('limits live checkout routes to the darts remaining', () => {
+    assert.deepEqual(
+        checkoutRoutes(110, false, 2, 1)[0].map(({ multiplier, number }) => [multiplier, number]),
+        [['T', 20], ['DB', 25]],
+    );
+    assert.deepEqual(
+        checkoutRoutes(50, false, 1, 1)[0].map(({ multiplier, number }) => [multiplier, number]),
+        [['DB', 25]],
+    );
+    assert.deepEqual(checkoutRoutes(110, false, 1, 3), []);
 });
 
 test('undo restores the previous player and score', () => {

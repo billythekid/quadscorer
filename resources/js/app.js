@@ -1,7 +1,7 @@
 import '../css/app.css';
 import {
     addVisit,
-    checkoutRoute,
+    checkoutRoutes,
     createGame,
     formatSegment,
     restoreGame,
@@ -155,17 +155,36 @@ function scoreCards() {
 
 function checkoutHint() {
     const player = activePlayer();
-    const route = checkoutRoute(player.score, state.game.settings.quadro);
+    const pendingTotal = state.entryMode === 'darts'
+        ? state.pendingDarts.reduce((sum, dart) => sum + dart.value, 0)
+        : 0;
+    const score = player.score - pendingTotal;
+    const dartsRemaining = state.entryMode === 'darts' ? 3 - state.pendingDarts.length : 3;
+    const finishingDart = state.pendingDarts.at(-1);
 
-    if (!route) {
-        return player.score <= 170 || state.game.settings.quadro
-            ? '<span>No checkout</span>'
-            : '<span>Set up your finish</span>';
+    if (score === 0) {
+        const validFinish = finishingDart?.multiplier === 'D' || finishingDart?.multiplier === 'DB';
+
+        return `<span>${validFinish ? 'Checkout complete' : 'Bust: finish on a double'}</span>`;
+    }
+
+    if (score < 2) {
+        return '<span>Bust</span>';
+    }
+
+    const routes = checkoutRoutes(score, state.game.settings.quadro, dartsRemaining, 3);
+
+    if (routes.length === 0) {
+        return `<span>${dartsRemaining ? 'No checkout this visit' : 'Visit complete'}</span>`;
     }
 
     return `
-        <span>Checkout</span>
-        <strong>${route.map(formatSegment).join('  ')}</strong>
+        <span class="checkout-label">Checkout ${score}</span>
+        <div class="checkout-options">
+            ${routes.map((route, index) => `
+                <span class="${index === 0 ? 'is-primary' : ''}">${route.map(formatSegment).join(' ')}</span>
+            `).join('')}
+        </div>
     `;
 }
 
@@ -288,7 +307,10 @@ function renderGame() {
 }
 
 function render() {
-    if (state.screen === 'game' && state.game) {
+    const gameActive = state.screen === 'game' && state.game;
+    document.body.classList.toggle('game-active', Boolean(gameActive));
+
+    if (gameActive) {
         renderGame();
     } else {
         renderSetup();
