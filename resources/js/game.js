@@ -30,6 +30,7 @@ export function createGame({ players, startingScore, quadro = false }) {
         currentPlayerIndex: 0,
         winnerIndex: null,
         history: [],
+        completedGames: [],
     };
 }
 
@@ -103,7 +104,7 @@ function doubles() {
     return segments;
 }
 
-export function checkoutRoute(score, quadro = false) {
+function buildCheckoutRoutes(score, quadro) {
     const numericScore = Number(score);
     const cacheKey = `${quadro ? 'q' : 's'}:${numericScore}`;
 
@@ -112,26 +113,31 @@ export function checkoutRoute(score, quadro = false) {
     }
 
     if (!Number.isInteger(numericScore) || numericScore < 2) {
-        return null;
+        return [];
     }
 
     const setupSegments = routeSegments(quadro);
+    const routes = [];
+    const routeKeys = new Set();
+    const addRoute = (route) => {
+        const key = route.map(formatSegment).join('|');
+
+        if (!routeKeys.has(key)) {
+            routeKeys.add(key);
+            routes.push(route);
+        }
+    };
 
     for (const finish of doubles()) {
         if (finish.value === numericScore) {
-            checkoutCache.set(cacheKey, [finish]);
-
-            return [finish];
+            addRoute([finish]);
         }
     }
 
     for (const first of setupSegments) {
         for (const finish of doubles()) {
             if (first.value + finish.value === numericScore) {
-                const route = [first, finish];
-                checkoutCache.set(cacheKey, route);
-
-                return route;
+                addRoute([first, finish]);
             }
         }
     }
@@ -140,18 +146,37 @@ export function checkoutRoute(score, quadro = false) {
         for (const second of setupSegments) {
             for (const finish of doubles()) {
                 if (first.value + second.value + finish.value === numericScore) {
-                    const route = [first, second, finish];
-                    checkoutCache.set(cacheKey, route);
+                    addRoute([first, second, finish]);
 
-                    return route;
+                    if (routes.length >= 12) {
+                        checkoutCache.set(cacheKey, routes);
+
+                        return routes;
+                    }
                 }
             }
         }
     }
 
-    checkoutCache.set(cacheKey, null);
+    checkoutCache.set(cacheKey, routes);
 
-    return null;
+    return routes;
+}
+
+export function checkoutRoutes(score, quadro = false, dartsRemaining = 3, limit = 3) {
+    if (!Number.isInteger(dartsRemaining) || dartsRemaining < 1 || dartsRemaining > 3) {
+        return [];
+    }
+
+    return buildCheckoutRoutes(score, quadro)
+        .filter((route) => route.length <= dartsRemaining)
+        .slice(0, limit);
+}
+
+export function checkoutRoute(score, quadro = false) {
+    const routes = checkoutRoutes(score, quadro, 3, 1);
+
+    return routes[0] ?? null;
 }
 
 export function formatSegment(segment) {
@@ -257,6 +282,21 @@ export function undoVisit(game) {
     return nextGame;
 }
 
+export function startRematch(game) {
+    const nextGame = createGame(game.settings);
+
+    nextGame.completedGames = [
+        ...(game.completedGames ?? []),
+        {
+            players: game.players.map((player) => player.name),
+            winnerIndex: game.winnerIndex,
+            history: game.history,
+        },
+    ];
+
+    return nextGame;
+}
+
 export function saveGame(storage, game) {
     storage.setItem(STORAGE_KEY, JSON.stringify(game));
 }
@@ -281,6 +321,8 @@ export function restoreGame(storage) {
 
             return null;
         }
+
+        game.completedGames = Array.isArray(game.completedGames) ? game.completedGames : [];
 
         return game;
     } catch {

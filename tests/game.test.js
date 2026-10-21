@@ -4,11 +4,13 @@ import {
     addVisit,
     allowedTotals,
     checkoutRoute,
+    checkoutRoutes,
     createGame,
     restoreGame,
     restorePlayerNames,
     saveGame,
     savePlayerNames,
+    startRematch,
     undoVisit,
 } from '../resources/js/game.js';
 
@@ -84,6 +86,30 @@ test('finds standard and Quadro checkout routes', () => {
     assert.equal(checkoutRoute(200, true).reduce((sum, segment) => sum + segment.value, 0), 200);
 });
 
+test('offers distinct checkout variants that all finish on a double', () => {
+    const routes = checkoutRoutes(100, false, 3, 3);
+
+    assert.equal(routes.length, 3);
+    assert.equal(new Set(routes.map((route) => route.map(({ multiplier, number }) => `${multiplier}${number}`).join('-'))).size, 3);
+
+    for (const route of routes) {
+        assert.equal(route.reduce((sum, segment) => sum + segment.value, 0), 100);
+        assert.equal(['D', 'DB'].includes(route.at(-1).multiplier), true);
+    }
+});
+
+test('limits live checkout routes to the darts remaining', () => {
+    assert.deepEqual(
+        checkoutRoutes(110, false, 2, 1)[0].map(({ multiplier, number }) => [multiplier, number]),
+        [['T', 20], ['DB', 25]],
+    );
+    assert.deepEqual(
+        checkoutRoutes(50, false, 1, 1)[0].map(({ multiplier, number }) => [multiplier, number]),
+        [['DB', 25]],
+    );
+    assert.deepEqual(checkoutRoutes(110, false, 1, 3), []);
+});
+
 test('undo restores the previous player and score', () => {
     const game = createGame({ players: ['Alice', 'Bob'], startingScore: 501 });
     const scored = addVisit(game, { total: 100 }).game;
@@ -93,6 +119,23 @@ test('undo restores the previous player and score', () => {
     assert.equal(undone.players[0].visits.length, 0);
     assert.equal(undone.currentPlayerIndex, 0);
     assert.equal(undone.history.length, 0);
+});
+
+test('a rematch preserves completed game history and resets the scores', () => {
+    const game = createGame({ players: ['Alice', 'Bob'], startingScore: 40 });
+    const finished = addVisit(game, {
+        segments: [{ multiplier: 'D', number: 20, value: 40 }],
+    }).game;
+    const rematch = startRematch(finished);
+
+    assert.equal(rematch.players[0].score, 40);
+    assert.equal(rematch.players[1].score, 40);
+    assert.equal(rematch.history.length, 0);
+    assert.equal(rematch.winnerIndex, null);
+    assert.equal(rematch.completedGames.length, 1);
+    assert.equal(rematch.completedGames[0].winnerIndex, 0);
+    assert.deepEqual(rematch.completedGames[0].players, ['Alice', 'Bob']);
+    assert.equal(rematch.completedGames[0].history[0].label, 'D20');
 });
 
 test('persists and restores a game', () => {

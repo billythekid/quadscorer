@@ -1,13 +1,14 @@
 import '../css/app.css';
 import {
     addVisit,
-    checkoutRoute,
+    checkoutRoutes,
     createGame,
     formatSegment,
     restoreGame,
     restorePlayerNames,
     saveGame,
     savePlayerNames,
+    startRematch,
     undoVisit,
 } from './game.js';
 
@@ -155,17 +156,36 @@ function scoreCards() {
 
 function checkoutHint() {
     const player = activePlayer();
-    const route = checkoutRoute(player.score, state.game.settings.quadro);
+    const pendingTotal = state.entryMode === 'darts'
+        ? state.pendingDarts.reduce((sum, dart) => sum + dart.value, 0)
+        : 0;
+    const score = player.score - pendingTotal;
+    const dartsRemaining = state.entryMode === 'darts' ? 3 - state.pendingDarts.length : 3;
+    const finishingDart = state.pendingDarts.at(-1);
 
-    if (!route) {
-        return player.score <= 170 || state.game.settings.quadro
-            ? '<span>No checkout</span>'
-            : '<span>Set up your finish</span>';
+    if (score === 0) {
+        const validFinish = finishingDart?.multiplier === 'D' || finishingDart?.multiplier === 'DB';
+
+        return `<span>${validFinish ? 'Checkout complete' : 'Bust: finish on a double'}</span>`;
+    }
+
+    if (score < 2) {
+        return '<span>Bust</span>';
+    }
+
+    const routes = checkoutRoutes(score, state.game.settings.quadro, dartsRemaining, 3);
+
+    if (routes.length === 0) {
+        return `<span>${dartsRemaining ? 'No checkout this visit' : 'Visit complete'}</span>`;
     }
 
     return `
-        <span>Checkout</span>
-        <strong>${route.map(formatSegment).join('  ')}</strong>
+        <span class="checkout-label">Checkout ${score}</span>
+        <div class="checkout-options">
+            ${routes.map((route, index) => `
+                <span class="${index === 0 ? 'is-primary' : ''}">${route.map(formatSegment).join(' ')}</span>
+            `).join('')}
+        </div>
     `;
 }
 
@@ -232,6 +252,20 @@ function dartEntry() {
 
 function renderGame() {
     const boardName = state.game.settings.quadro ? 'Quadro' : 'Standard';
+    const historySections = [
+        {
+            title: `Game ${state.game.completedGames.length + 1}`,
+            players: state.game.players.map((player) => player.name),
+            winnerIndex: state.game.winnerIndex,
+            history: state.game.history,
+            current: true,
+        },
+        ...[...state.game.completedGames].reverse().map((game, index) => ({
+            title: `Game ${state.game.completedGames.length - index}`,
+            ...game,
+            current: false,
+        })),
+    ];
 
     app.innerHTML = `
         <section class="game-shell">
@@ -273,22 +307,35 @@ function renderGame() {
                 <button class="icon-button" data-action="close-history">Close</button>
             </div>
             <div class="history-list">
-                ${state.game.history.length
-                    ? [...state.game.history].reverse().map((visit) => `
-                        <div class="history-row">
-                            <span>${escapeHtml(state.game.players[visit.playerIndex].name)}</span>
-                            <strong>${escapeHtml(visit.label)}</strong>
-                            <span>${visit.scoreBefore} to ${visit.scoreAfter}</span>
-                        </div>
-                    `).join('')
-                    : '<p>No visits yet.</p>'}
+                ${historySections.map((game) => `
+                    <section class="history-section">
+                        <header>
+                            <strong>${game.title}</strong>
+                            <span>${game.winnerIndex === null
+                                ? (game.current ? 'In progress' : 'Not completed')
+                                : `${escapeHtml(game.players[game.winnerIndex])} won`}</span>
+                        </header>
+                        ${game.history.length
+                            ? [...game.history].reverse().map((visit) => `
+                                <div class="history-row">
+                                    <span>${escapeHtml(game.players[visit.playerIndex])}</span>
+                                    <strong>${escapeHtml(visit.label)}</strong>
+                                    <span>${visit.scoreBefore} to ${visit.scoreAfter}</span>
+                                </div>
+                            `).join('')
+                            : '<p>No visits yet.</p>'}
+                    </section>
+                `).join('')}
             </div>
         </dialog>
     `;
 }
 
 function render() {
-    if (state.screen === 'game' && state.game) {
+    const gameActive = state.screen === 'game' && state.game;
+    document.body.classList.toggle('game-active', Boolean(gameActive));
+
+    if (gameActive) {
         renderGame();
     } else {
         renderSetup();
@@ -398,7 +445,7 @@ app.addEventListener('click', async (event) => {
         state.notice = '';
         persist();
     } else if (action === 'rematch') {
-        state.game = createGame(state.game.settings);
+        state.game = startRematch(state.game);
         state.notice = '';
         persist();
     } else if (action === 'new-game') {
