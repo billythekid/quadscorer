@@ -58,7 +58,7 @@ input:focus-visible {
 
 .setup-shell,
 .game-shell {
-    width: min(100%, 680px);
+    width: min(100%, 1100px);
     min-height: 100dvh;
     margin: 0 auto;
     padding: max(16px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
