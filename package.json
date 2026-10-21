@@ -1,21 +1,14 @@
 {
+    "name": "quadscorer",
     "private": true,
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "preview": "vite preview",
+        "test": "node --test"
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.20",
-        "axios": "^1.20.0",
-        "concurrently": "^9.2.5",
-        "flowbite-typography": "^1.0.5",
-        "laravel-vite-plugin": "^3.1.0",
-        "postcss": "^8.5.23",
-        "tailwindcss": "^4.3.3",
-        "vite": "^8.0.16"
-    },
-    "dependencies": {
-        "flowbite": "^3.1.2"
+        "vite": "^8.3.5"
     }
 }
