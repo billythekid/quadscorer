@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+    <rect width="1200" height="630" fill="#0b0d0c"/>
+    <circle cx="260" cy="315" r="170" fill="none" stroke="#d8ff3e" stroke-width="34"/>
+    <circle cx="260" cy="315" r="108" fill="none" stroke="#d8ff3e" stroke-width="20"/>
+    <circle cx="260" cy="315" r="34" fill="#d8ff3e"/>
+    <path d="M260 145v340M90 315h340M140 195l240 240M380 195L140 435" stroke="#d8ff3e" stroke-width="10"/>
+    <circle cx="260" cy="315" r="18" fill="#0b0d0c"/>
+    <text x="500" y="292" fill="#ffffff" font-family="Arial, sans-serif" font-size="96" font-weight="800">Quadscorer</text>
+    <text x="505" y="362" fill="#9ea69f" font-family="Arial, sans-serif" font-size="34">X01 scoring for standard and Quadro boards</text>
+</svg>
